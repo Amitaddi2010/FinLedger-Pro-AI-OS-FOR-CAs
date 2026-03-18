@@ -133,7 +133,7 @@ const AlertsInbox = () => {
             </div>
           ) : alerts.length > 0 ? (
             <AnimatePresence>
-              {alerts.map((alert, i) => (
+              {(Array.isArray(alerts) ? alerts : []).map((alert, i) => (
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                   key={alert._id} 

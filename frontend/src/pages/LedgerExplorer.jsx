@@ -66,7 +66,7 @@ const LedgerExplorer = () => {
   const exportCSV = () => {
     if (transactions.length === 0) return;
     const headers = ['Date', 'Description', 'Amount', 'Type', 'Category', 'Status'];
-    const rows = transactions.map(t => [
+    const rows = (Array.isArray(transactions) ? transactions : []).map(t => [
       new Date(t.date).toLocaleDateString('en-IN'),
       `"${t.description}"`,
       t.amount,
@@ -211,7 +211,7 @@ const LedgerExplorer = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.04]">
-                {transactions.map((txn, i) => (
+                {(Array.isArray(transactions) ? transactions : []).map((txn, i) => (
                   <motion.tr
                     key={txn._id}
                     initial={{ opacity: 0 }}

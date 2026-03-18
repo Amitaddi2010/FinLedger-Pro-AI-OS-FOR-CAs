@@ -93,7 +93,7 @@ const AuditTrail = () => {
           <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-white/5 md:-translate-x-1/2" />
 
           <div className="space-y-8">
-            {logs.map((log, index) => {
+            {(Array.isArray(logs) ? logs : []).map((log, index) => {
               const isEven = index % 2 === 0;
               const date = new Date(log.createdAt);
               

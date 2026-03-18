@@ -63,7 +63,7 @@ const Sidebar = () => {
           {/* Dropdown */}
           {isCompanyOpen && companies.length > 0 && (
             <div className="absolute top-full left-0 right-0 mt-1 bg-[#0D0B14] border border-white/10 rounded-xl shadow-2xl shadow-black/50 z-50 py-1 max-h-48 overflow-y-auto animate-fade-in">
-              {companies.map(company => (
+              {(Array.isArray(companies) ? companies : []).map(company => (
                 <button
                   key={company._id}
                   onClick={() => { switchCompany(company._id); setIsCompanyOpen(false); }}
