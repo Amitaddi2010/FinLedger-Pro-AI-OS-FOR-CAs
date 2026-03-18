@@ -31,6 +31,10 @@ const documentSchema = new mongoose.Schema({
   uploadedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
+  },
+  extractedText: {
+    type: String,
+    default: null
   }
 }, {
   timestamps: true

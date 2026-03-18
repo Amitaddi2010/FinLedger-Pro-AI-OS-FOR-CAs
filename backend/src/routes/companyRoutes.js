@@ -13,4 +13,7 @@ router.post('/switch/:companyId', protect, companyController.switchCompany);
 router.post('/budget', protect, budgetController.saveBudget);
 router.get('/budget', protect, budgetController.getBudget);
 
+// Get audit logs for active workspace
+router.get('/audit-logs', protect, companyController.getAuditLogs);
+
 export default router;

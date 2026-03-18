@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import api from '../services/api';
 import { 
   ArrowTrendingUpIcon, ArrowTrendingDownIcon, SparklesIcon, 
   ChartPieIcon, CurrencyDollarIcon, PresentationChartLineIcon,
   ExclamationTriangleIcon, CalendarDaysIcon, BanknotesIcon,
-  ArrowPathIcon
+  ArrowPathIcon, PrinterIcon
 } from '@heroicons/react/24/outline';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { motion } from 'framer-motion';
@@ -56,6 +57,7 @@ const MetricCard = ({ title, value, status, percentage, icon: Icon, prefix = "â‚
 /* ==================== MAIN DASHBOARD ==================== */
 const CompanyDashboard = () => {
   const { activeCompanyId, companies } = useAuthStore();
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [categories, setCategories] = useState([]);
   const [mom, setMom] = useState(null);
@@ -148,13 +150,16 @@ const CompanyDashboard = () => {
           <h1 className="text-4xl font-black text-white tracking-tight">{activeCompany?.name}</h1>
         </div>
         <div className="flex gap-3">
-          <button onClick={loadAllData} className="text-sm font-medium text-finledger-silver hover:text-white glass-panel border-white/5 hover:border-white/20 px-5 py-2.5 rounded-xl transition flex items-center gap-2">
+          <button onClick={() => navigate('/report')} className="text-sm font-medium text-finledger-silver hover:text-white glass-panel border-white/5 hover:border-white/20 px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+            <PrinterIcon className="w-4 h-4" /> Export Report
+          </button>
+          <button onClick={loadAllData} className="text-sm font-medium text-finledger-silver hover:text-white glass-panel border-white/5 hover:border-white/20 px-4 py-2.5 rounded-xl transition flex items-center gap-2">
             <ArrowPathIcon className="w-4 h-4" /> Sync Ledgers
           </button>
           <button 
             onClick={generateInsight} 
             disabled={insightLoading}
-            className="btn-primary flex items-center gap-2 text-sm rounded-xl px-6"
+            className="btn-primary flex items-center gap-2 text-sm rounded-xl px-5"
           >
             {insightLoading ? (
               <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Analyzing...</>

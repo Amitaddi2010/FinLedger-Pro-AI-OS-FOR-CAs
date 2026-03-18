@@ -19,4 +19,13 @@ router.get('/anomalies', protect, metricsController.getAnomalies);
 // Forecast next month
 router.get('/forecast', protect, metricsController.getForecast);
 
+// Financial Ratios
+router.get('/ratios', protect, metricsController.getFinancialRatios);
+
+// GST Intelligence Summary
+router.get('/gst', protect, metricsController.getGstSummary);
+
+// Year-over-Year Comparison
+router.get('/yoy', protect, metricsController.getYoYComparison);
+
 export default router;

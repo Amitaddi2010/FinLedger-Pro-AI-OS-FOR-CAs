@@ -5,6 +5,10 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pdfParse = require('pdf-parse');
+
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
@@ -55,7 +59,7 @@ router.get('/stats', protect, async (req, res) => {
 });
 
 /**
- * Direct Vault Upload
+ * Direct Vault Upload & PDF Extraction Tooling
  */
 router.post('/upload', protect, upload.single('file'), async (req, res) => {
   try {
@@ -67,8 +71,20 @@ router.post('/upload', protect, upload.single('file'), async (req, res) => {
     if (!fs.existsSync(vaultDir)) fs.mkdirSync(vaultDir, { recursive: true });
 
     const originalName = req.file.originalname;
-    const vaultPath = path.join(vaultDir, req.file.filename + path.extname(originalName));
+    const extName = path.extname(originalName).toLowerCase();
+    const vaultPath = path.join(vaultDir, req.file.filename + extName);
     fs.renameSync(req.file.path, vaultPath);
+
+    let extractedText = null;
+    if (extName === '.pdf') {
+      try {
+        const dataBuffer = fs.readFileSync(vaultPath);
+        const data = await pdfParse(dataBuffer);
+        extractedText = data.text;
+      } catch (pdfErr) {
+        console.warn("PDF Extraction skipped/failed:", pdfErr.message);
+      }
+    }
 
     const doc = await Document.create({
       companyId: activeCompanyId,
@@ -77,7 +93,8 @@ router.post('/upload', protect, upload.single('file'), async (req, res) => {
       size: `${(req.file.size / 1024 / 1024).toFixed(2)} MB`,
       category: req.body.category || 'General',
       filePath: vaultPath,
-      uploadedBy: req.user._id
+      uploadedBy: req.user._id,
+      extractedText: extractedText
     });
 
     res.status(201).json(doc);

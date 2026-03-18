@@ -2,6 +2,7 @@ import { Transaction } from '../models/Transaction.js';
 import { Document } from '../models/Document.js';
 import { financialService } from '../services/financialService.js';
 import { tallyService } from '../services/tallyService.js';
+import { ocrService } from '../services/ocrService.js';
 import csvParser from 'csv-parser';
 import fs from 'fs';
 import path from 'path';
@@ -133,6 +134,104 @@ export const transactionController = {
       const overview = await financialService.getCompanyOverview(activeCompanyId);
       res.json(overview);
     } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+
+  /**
+   * AI Receipt/Image OCR Ingestion
+   */
+  async uploadReceipt(req, res) {
+    try {
+      const activeCompanyId = req.body.companyId || req.user.activeCompanyId;
+      if (!activeCompanyId) return res.status(400).json({ message: 'Select a company first.' });
+      if (!req.file) return res.status(400).json({ message: 'No image uploaded.' });
+
+      const filePath = req.file.path;
+      const buffer = fs.readFileSync(filePath);
+      const mimeType = req.file.mimetype;
+
+      // Extract details via Vision AI
+      const ocrData = await ocrService.extractReceiptData(buffer, mimeType);
+      console.log('[Receipt] OCR returned:', JSON.stringify(ocrData));
+
+      // Save to Ledger as EXPENSE
+      const finalAmount = parseFloat(ocrData.amount) || 0;
+      const newTransaction = await Transaction.create({
+        companyId: activeCompanyId,
+        date: new Date(ocrData.date || new Date()),
+        description: ocrData.description || 'AI Extracted Receipt',
+        amount: finalAmount,
+        type: 'EXPENSE',
+        category: ocrData.category || 'Uncategorized',
+        status: 'CLEARED'
+      });
+
+      console.log(`[Receipt] Saved transaction: ₹${finalAmount} — ${ocrData.description}`);
+
+      // Cleanup Temp File
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+
+      res.status(201).json({
+        message: `Receipt parsed successfully! Extracted ₹${finalAmount.toLocaleString('en-IN')} from ${ocrData.description}.`,
+        transaction: newTransaction,
+        ocrData
+      });
+      
+    } catch (error) {
+      console.error('OCR Controller Error:', error);
+      if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+      res.status(500).json({ message: `AI Image Processing Error: ${error.message}` });
+    }
+  },
+
+  /**
+   * List transactions with search, filter, sort, pagination
+   */
+  async listTransactions(req, res) {
+    try {
+      const activeCompanyId = req.query.companyId || req.user.activeCompanyId;
+      if (!activeCompanyId) return res.status(400).json({ message: 'Select a company first.' });
+
+      const {
+        page = 1, limit = 50,
+        search, type, category, status,
+        startDate, endDate,
+        sortBy = 'date', sortOrder = 'desc'
+      } = req.query;
+
+      // Build query
+      const query = { companyId: activeCompanyId };
+      if (search) query.description = { $regex: search, $options: 'i' };
+      if (type) query.type = type;
+      if (category) query.category = category;
+      if (status) query.status = status;
+      if (startDate || endDate) {
+        query.date = {};
+        if (startDate) query.date.$gte = new Date(startDate);
+        if (endDate) query.date.$lte = new Date(endDate);
+      }
+
+      const sort = { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
+      const skip = (parseInt(page) - 1) * parseInt(limit);
+
+      const [transactions, total] = await Promise.all([
+        Transaction.find(query).sort(sort).skip(skip).limit(parseInt(limit)),
+        Transaction.countDocuments(query)
+      ]);
+
+      // Get unique categories for filter dropdown
+      const categories = await Transaction.distinct('category', { companyId: activeCompanyId });
+
+      res.json({
+        transactions,
+        total,
+        page: parseInt(page),
+        totalPages: Math.ceil(total / parseInt(limit)),
+        categories
+      });
+    } catch (error) {
+      console.error('List Transactions Error:', error);
       res.status(500).json({ message: error.message });
     }
   }

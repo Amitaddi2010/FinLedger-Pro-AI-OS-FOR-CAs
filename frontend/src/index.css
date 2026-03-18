@@ -5,6 +5,11 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
   body {
     background-color: #08060D; /* VoidZero Black */
     color: #e2e8f0; 
@@ -84,3 +89,14 @@
 .radial-glow {
   background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15), transparent 70%);
 }
+
+.skeleton-bg {
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.primary-gradient {
+  background: linear-gradient(180deg, #6366f1, #8b5cf6);
+}
+

@@ -10,10 +10,12 @@ import authRoutes from './routes/authRoutes.js';
 import companyRoutes from './routes/companyRoutes.js';
 import transactionRoutes from './routes/transactionRoutes.js';
 import insightRoutes from './routes/insightRoutes.js';
+import invoiceRoutes from './routes/invoiceRoutes.js';
 import metricsRoutes from './routes/metricsRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import documentRoutes from './routes/documentRoutes.js';
 import deadlineRoutes from './routes/deadlineRoutes.js';
+import alertRoutes from './routes/alertRoutes.js';
 
 const startServer = async () => {
   // Connect to MongoDB first
@@ -33,9 +35,11 @@ const startServer = async () => {
   app.use('/api/transactions', transactionRoutes);
   app.use('/api/insights', insightRoutes);
   app.use('/api/metrics', metricsRoutes);
+app.use('/api/invoices', invoiceRoutes);
   app.use('/api/users', userRoutes);
   app.use('/api/documents', documentRoutes);
   app.use('/api/deadlines', deadlineRoutes);
+  app.use('/api/alerts', alertRoutes);
 
   // Error Handling Middleware
   app.use((err, req, res, next) => {

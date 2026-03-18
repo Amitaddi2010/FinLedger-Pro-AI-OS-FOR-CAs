@@ -5,7 +5,17 @@ export const useAuthStore = create((set) => ({
   user: null,
   companies: [],
   activeCompanyId: null,
+  checkingAuth: true,
   
+  checkAuth: async () => {
+    try {
+      const { data } = await api.get('/auth/me');
+      set({ user: data, activeCompanyId: data.activeCompanyId, checkingAuth: false });
+    } catch (err) {
+      set({ user: null, activeCompanyId: null, checkingAuth: false });
+    }
+  },
+
   login: async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
     set({ user: data, activeCompanyId: data.activeCompanyId });

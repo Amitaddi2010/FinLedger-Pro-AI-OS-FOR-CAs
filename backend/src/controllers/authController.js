@@ -62,5 +62,35 @@ export const authController = {
 
   async getMe(req, res) {
     res.json(req.user);
+  },
+
+  async inviteClient(req, res) {
+    try {
+      const { name, email, password, companyId } = req.body;
+      
+      // Only CAs or Admins can invite clients
+      if (req.user.role === 'CLIENT') {
+        return res.status(403).json({ message: 'Unauthorized. Only CAs can invite clients.' });
+      }
+
+      const userExists = await User.findOne({ email });
+      if (userExists) return res.status(400).json({ message: 'A user with this email already exists.' });
+
+      const clientUser = await User.create({
+        name,
+        email,
+        passwordHash: password,
+        role: 'CLIENT',
+        activeCompanyId: companyId
+      });
+
+      res.status(201).json({ 
+        message: 'Client portal access granted successfully.',
+        clientParams: { name: clientUser.name, email: clientUser.email, companyAssigned: companyId }
+      });
+
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
   }
 };

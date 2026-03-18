@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuthStore } from '../stores/authStore';
 import api from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CommandLineIcon, CpuChipIcon, ShieldCheckIcon, CloudArrowUpIcon, DocumentCheckIcon } from '@heroicons/react/24/outline';
+import { CommandLineIcon, CpuChipIcon, ShieldCheckIcon, CloudArrowUpIcon, DocumentCheckIcon, EyeIcon, BanknotesIcon } from '@heroicons/react/24/outline';
 
 const SCAVENGER_LOGS = [
   "INITIALIZING: Ledger Scavenger Protocol v3.4...",
@@ -19,18 +19,21 @@ const SCAVENGER_LOGS = [
 
 const UploadData = () => {
   const { activeCompanyId } = useAuthStore();
+  const [mode, setMode] = useState('bulk'); // 'bulk' or 'ocr'
+
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(0);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
   const [logs, setLogs] = useState([]);
+  const [ocrResult, setOcrResult] = useState(null);
   const logsEndRef = useRef(null);
 
   useEffect(() => {
     let interval;
     let logInterval;
-    if (loading) {
+    if (loading && mode === 'bulk') {
       interval = setInterval(() => {
         setTimer(prev => prev + 0.05);
       }, 50);
@@ -50,15 +53,22 @@ const UploadData = () => {
         }
       }, 400);
 
+    } else if (loading && mode === 'ocr') {
+      interval = setInterval(() => setTimer(prev => prev + 0.05), 50);
+      setLogs([
+        `[${new Date().toISOString()}] SYSTEM: Initializing LLaMA-3 Vision Processor...`,
+        `[${new Date().toISOString()}] ENCODING: Image Buffer verified...`,
+        `[${new Date().toISOString()}] AI: Analyzing vendor strings & values...`
+      ]);
     } else {
       setTimer(0);
-      if(!message) setLogs([]); // keep logs on success
+      if(!message) setLogs([]); 
     }
     return () => {
       if (interval) clearInterval(interval);
       if (logInterval) clearInterval(logInterval);
     };
-  }, [loading, message]);
+  }, [loading, message, mode]);
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -67,20 +77,38 @@ const UploadData = () => {
     setLoading(true);
     setError(null);
     setMessage(null);
-    setLogs([`[${new Date().toISOString()}] SYSTEM: Commencing direct binary upload...`]);
+    setOcrResult(null);
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append(mode === 'bulk' ? 'file' : 'image', file);
     formData.append('companyId', activeCompanyId);
     
     try {
-      // Simulate real processing time for effect since actual upload might be instant
-      await new Promise(resolve => setTimeout(resolve, 4000));
-      const res = await api.post('/transactions/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setMessage(res.data.message);
-      setLogs(prev => [...prev, `[${new Date().toISOString()}] SYSTEM: Analysis Complete. Data ingested successfully.`]);
+      if (mode === 'bulk') {
+        setLogs([`[${new Date().toISOString()}] SYSTEM: Commencing direct binary upload...`]);
+        await new Promise(resolve => setTimeout(resolve, 4000));
+        const res = await api.post('/transactions/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        setMessage(res.data.message);
+        setLogs(prev => [...prev, `[${new Date().toISOString()}] SYSTEM: Analysis Complete. Data ingested successfully.`]);
+      } else {
+        // OCR Upload
+        const res = await api.post('/transactions/upload-receipt', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        setMessage(res.data.message);
+        setOcrResult(res.data.transaction);
+        const ocr = res.data.ocrData || res.data.transaction;
+        setLogs(prev => [
+            ...prev, 
+            `[${new Date().toISOString()}] AI: Extraction Complete ✅`,
+            `[${new Date().toISOString()}] AMOUNT: ₹${ocr.amount || 0}`,
+            `[${new Date().toISOString()}] VENDOR: ${ocr.description || 'N/A'}`,
+            `[${new Date().toISOString()}] CATEGORY: ${ocr.category || 'N/A'}`,
+            `[${new Date().toISOString()}] SYSTEM: Ledger entry stored successfully.`
+        ]);
+      }
       setFile(null);
     } catch (err) {
       setError(err?.response?.data?.message || err.message);
@@ -88,6 +116,14 @@ const UploadData = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const clearForm = () => {
+    setFile(null);
+    setMessage(null);
+    setError(null);
+    setOcrResult(null);
+    setLogs([]);
   };
 
   if (!activeCompanyId) {
@@ -111,18 +147,38 @@ const UploadData = () => {
           Data Ingestion Engine
         </motion.h1>
         <p className="text-gray-400 text-lg max-w-2xl mx-auto font-medium text-center">
-          Securely upload ledger exports to feed the autonomous intelligence pipeline. Powered by our proprietary Scavenger technology.
+          Securely upload ledger exports or single receipts to feed the autonomous intelligence pipeline. Powered by Scavenger & Vision OCR.
         </p>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8 relative z-10">
         
-        {/* Upload Control Panel */}
         <div className="glass-panel p-8 md:p-10 flex flex-col justify-between">
           <div>
-            <div className="flex items-center gap-3 mb-8">
-              <CpuChipIcon className="w-6 h-6 text-finledger-indigo" />
-              <h3 className="text-xl font-bold text-white uppercase tracking-widest text-[13px]">Engine Control</h3>
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <CpuChipIcon className="w-6 h-6 text-finledger-indigo" />
+                <h3 className="text-xl font-bold text-white uppercase tracking-widest text-[13px]">Engine Control</h3>
+              </div>
+              
+              <div className="flex bg-black/40 p-1 border border-white/[0.06] rounded-xl">
+                 <button 
+                   onClick={() => { setMode('bulk'); clearForm(); }} 
+                   className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 transition-all ${
+                     mode === 'bulk' ? 'bg-white/[0.1] text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'
+                   }`}
+                 >
+                   <CommandLineIcon className="w-3.5 h-3.5" /> Scavenger
+                 </button>
+                 <button 
+                   onClick={() => { setMode('ocr'); clearForm(); }} 
+                   className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 transition-all ${
+                     mode === 'ocr' ? 'bg-finledger-indigo/20 border border-finledger-indigo/30 text-finledger-indigo shadow-inner' : 'text-gray-500 hover:text-gray-300'
+                   }`}
+                 >
+                   <EyeIcon className="w-3.5 h-3.5" /> Vision AI
+                 </button>
+              </div>
             </div>
             
             <AnimatePresence>
@@ -140,16 +196,39 @@ const UploadData = () => {
               )}
             </AnimatePresence>
 
+            {ocrResult && (
+               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6 bg-[#0D0B14] border border-white/10 p-5 rounded-xl shadow-inner">
+                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                   <BanknotesIcon className="w-4 h-4 text-finledger-indigo" /> Ledger Entry Generated
+                 </h4>
+                 <div className="grid grid-cols-2 gap-4">
+                   <div>
+                     <p className="text-[9px] text-gray-500 uppercase tracking-widest">Amount</p>
+                     <p className="text-xl font-bold text-white">₹{ocrResult.amount.toLocaleString()}</p>
+                   </div>
+                   <div>
+                     <p className="text-[9px] text-gray-500 uppercase tracking-widest">Category</p>
+                     <p className="text-sm font-medium text-emerald-400">{ocrResult.category}</p>
+                   </div>
+                   <div className="col-span-2">
+                     <p className="text-[9px] text-gray-500 uppercase tracking-widest">Description</p>
+                     <p className="text-sm text-gray-300 truncate">{ocrResult.description}</p>
+                   </div>
+                 </div>
+               </motion.div>
+            )}
+
             <form onSubmit={handleUpload} className="flex flex-col gap-6">
               <input 
                 type="file" 
-                accept=".csv,.900,.tsf,.xml,.zip"
+                accept={mode === 'bulk' ? ".csv,.900,.tsf,.xml,.zip" : "image/jpeg, image/png, image/webp"}
                 id="file-upload"
                 className="hidden"
                 onChange={(e) => {
                   setFile(e.target.files[0]);
                   setMessage(null);
                   setError(null);
+                  setOcrResult(null);
                 }}
               />
               
@@ -160,10 +239,10 @@ const UploadData = () => {
                 <CloudArrowUpIcon className={`w-12 h-12 ${file ? 'text-finledger-indigo' : 'text-gray-500 group-hover:text-gray-300'} transition-colors`} />
                 <div className="text-center">
                   <p className={`font-bold ${file ? 'text-white' : 'text-gray-400'}`}>
-                    {file ? file.name : 'Click to Browse Data File'}
+                    {file ? file.name : (mode === 'bulk' ? 'Browse Ledger Data' : 'Upload Receipt Image')}
                   </p>
                   <p className="text-[11px] text-gray-500 uppercase tracking-widest mt-2">
-                    Supports .CSV, .900, .TSF, .XML
+                    {mode === 'bulk' ? 'Supports .CSV, .900, .TSF, .XML' : 'Supports JPG, PNG (Max 5MB)'}
                   </p>
                 </div>
               </label>
@@ -176,13 +255,12 @@ const UploadData = () => {
                 {loading ? (
                   <>
                     <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-                    ANALYZING LEDGER...
+                    {mode === 'bulk' ? 'ANALYZING LEDGER...' : 'RUNNING VISION OCR...'}
                   </>
                 ) : (
-                  'INITIATE INGESTION'
+                  mode === 'bulk' ? 'INITIATE INGESTION' : 'EXTRACT DATA'
                 )}
                 
-                {/* Button shine effect */}
                 <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-40 group-hover:animate-text-shine" />
               </button>
             </form>
@@ -195,14 +273,13 @@ const UploadData = () => {
             </div>
             <div className="flex flex-col gap-1">
               <div className="text-[10px] uppercase text-gray-500 font-bold tracking-widest flex items-center gap-1"><CommandLineIcon className="w-3 h-3"/> Parser</div>
-              <div className="text-lg font-bold text-white">Scavenger v3</div>
+              <div className="text-lg font-bold text-white">{mode === 'bulk' ? 'Scavenger v3' : 'LLaMA Vision'}</div>
             </div>
           </div>
         </div>
 
         {/* Terminal Window */}
         <div className="glass-panel flex flex-col relative overflow-hidden">
-          {/* Header */}
           <div className="bg-[#110E1A] px-6 py-4 flex items-center justify-between border-b border-white/10 z-20">
             <div className="flex items-center gap-4">
               <div className="flex gap-2">
@@ -210,7 +287,9 @@ const UploadData = () => {
                 <div className="w-3 h-3 rounded-full bg-amber-500/80" />
                 <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
               </div>
-              <span className="text-gray-400 font-mono text-xs uppercase tracking-widest">ledger_scavenger.exe</span>
+              <span className="text-gray-400 font-mono text-xs uppercase tracking-widest">
+                {mode === 'bulk' ? 'ledger_scavenger.exe' : 'vision_engine.bin'}
+              </span>
             </div>
             
             <div className="font-mono flex items-center gap-4 text-xs">
@@ -221,7 +300,6 @@ const UploadData = () => {
             </div>
           </div>
 
-          {/* Console Output */}
           <div className="terminal-window flex-1 p-6 relative bg-transparent border-none rounded-none rounded-b-3xl">
             {loading && <div className="scanline z-10" />}
             
@@ -241,6 +319,7 @@ const UploadData = () => {
                     className={`font-mono text-[13px] ${
                       log.includes('ERROR') ? 'text-rose-400' :
                       log.includes('SYSTEM') ? 'text-finledger-electric' :
+                      log.includes('AI:') ? 'text-emerald-400' :
                       'text-gray-300'
                     }`}
                   >
