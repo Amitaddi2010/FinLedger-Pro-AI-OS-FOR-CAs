@@ -10,7 +10,7 @@ import {
 
 const CreateInvoiceModal = ({ isOpen, onClose, onCreated }) => {
   const { companies } = useAuthStore();
-  const safeCompanies = companies || [];
+  const safeCompanies = Array.isArray(companies) ? companies : [];
   const [clientId, setClientId] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [taxRate, setTaxRate] = useState(18);
@@ -216,7 +216,7 @@ const ClientBilling = () => {
   };
 
   // KPI Calculations
-  const safeInvoices = invoices || [];
+  const safeInvoices = Array.isArray(invoices) ? invoices : [];
   const totalRevenue = safeInvoices.filter(i => i.status === 'PAID').reduce((sum, i) => sum + i.totalAmount, 0);
   const totalOutstanding = safeInvoices.filter(i => i.status === 'SENT' || i.status === 'OVERDUE').reduce((sum, i) => sum + i.totalAmount, 0);
   const overdueCount = safeInvoices.filter(i => i.status === 'OVERDUE').length;

@@ -36,7 +36,7 @@ const GstCard = ({ title, amount, subtitle, icon: Icon, colorClass, delay }) => 
 
 const GstIntelligence = () => {
   const { activeCompanyId, companies } = useAuthStore();
-  const activeCompany = (companies || []).find(c => c._id === activeCompanyId);
+  const activeCompany = (Array.isArray(companies) ? companies : []).find(c => c._id === activeCompanyId);
   
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);

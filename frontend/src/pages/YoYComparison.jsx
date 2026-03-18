@@ -38,7 +38,7 @@ const YoYCard = ({ title, amount, growth, delay, isCurrency = true }) => {
 
 const YoYComparison = () => {
   const { activeCompanyId, companies } = useAuthStore();
-  const activeCompany = (companies || []).find(c => c._id === activeCompanyId);
+  const activeCompany = (Array.isArray(companies) ? companies : []).find(c => c._id === activeCompanyId);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 

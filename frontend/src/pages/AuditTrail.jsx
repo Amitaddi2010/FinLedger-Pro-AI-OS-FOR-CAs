@@ -10,7 +10,7 @@ import {
 
 const AuditTrail = () => {
   const { activeCompanyId, companies } = useAuthStore();
-  const activeCompany = (companies || []).find(c => c._id === activeCompanyId);
+  const activeCompany = (Array.isArray(companies) ? companies : []).find(c => c._id === activeCompanyId);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
 

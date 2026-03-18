@@ -12,5 +12,15 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['framer-motion', '@heroicons/react', 'recharts']
+        }
+      }
+    }
   }
 })
