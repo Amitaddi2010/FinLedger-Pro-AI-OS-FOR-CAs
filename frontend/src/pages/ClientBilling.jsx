@@ -10,6 +10,7 @@ import {
 
 const CreateInvoiceModal = ({ isOpen, onClose, onCreated }) => {
   const { companies } = useAuthStore();
+  const safeCompanies = companies || [];
   const [clientId, setClientId] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [taxRate, setTaxRate] = useState(18);
@@ -61,7 +62,7 @@ const CreateInvoiceModal = ({ isOpen, onClose, onCreated }) => {
                 className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-finledger-indigo/50"
               >
                 <option value="">Select a client...</option>
-                {companies.map(c => (
+                {safeCompanies.map(c => (
                   <option key={c._id} value={c._id} className="bg-gray-900">{c.name}</option>
                 ))}
               </select>
@@ -215,9 +216,10 @@ const ClientBilling = () => {
   };
 
   // KPI Calculations
-  const totalRevenue = invoices.filter(i => i.status === 'PAID').reduce((sum, i) => sum + i.totalAmount, 0);
-  const totalOutstanding = invoices.filter(i => i.status === 'SENT' || i.status === 'OVERDUE').reduce((sum, i) => sum + i.totalAmount, 0);
-  const overdueCount = invoices.filter(i => i.status === 'OVERDUE').length;
+  const safeInvoices = invoices || [];
+  const totalRevenue = safeInvoices.filter(i => i.status === 'PAID').reduce((sum, i) => sum + i.totalAmount, 0);
+  const totalOutstanding = safeInvoices.filter(i => i.status === 'SENT' || i.status === 'OVERDUE').reduce((sum, i) => sum + i.totalAmount, 0);
+  const overdueCount = safeInvoices.filter(i => i.status === 'OVERDUE').length;
 
   return (
     <div className="animate-fade-in pb-12 max-w-[1600px] mx-auto relative">
@@ -281,7 +283,7 @@ const ClientBilling = () => {
           <div className="flex items-center justify-center py-20">
             <div className="w-10 h-10 border-4 border-white/10 border-t-finledger-indigo rounded-full animate-spin" />
           </div>
-        ) : invoices.length === 0 ? (
+        ) : safeInvoices.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <DocumentTextIcon className="w-12 h-12 text-gray-700 mb-4" />
             <p className="text-gray-400 text-lg font-medium">No invoices created yet</p>
@@ -303,7 +305,7 @@ const ClientBilling = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.04]">
-                {invoices.map((inv, idx) => (
+                {safeInvoices.map((inv, idx) => (
                   <motion.tr
                     key={inv._id}
                     initial={{ opacity: 0 }}

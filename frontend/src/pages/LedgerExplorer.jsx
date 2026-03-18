@@ -10,7 +10,7 @@ import {
 
 const LedgerExplorer = () => {
   const { activeCompanyId, companies } = useAuthStore();
-  const activeCompany = companies.find(c => c._id === activeCompanyId);
+  const activeCompany = (companies || []).find(c => c._id === activeCompanyId);
 
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
