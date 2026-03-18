@@ -1,0 +1,31 @@
+Date,Description,Amount,Type,Category
+2026-01-05,Client Project Alpha Payment,250000,INCOME,Consulting
+2026-01-10,AWS Cloud Hosting,18000,EXPENSE,Infrastructure
+2026-01-12,Office Rent Jan,45000,EXPENSE,Rent
+2026-01-15,Client Project Beta Retainer,180000,INCOME,Retainer
+2026-01-18,Employee Salaries Jan,320000,EXPENSE,Salaries
+2026-01-20,Marketing Campaign - Google Ads,35000,EXPENSE,Marketing
+2026-01-22,Software Subscriptions,12000,EXPENSE,Software
+2026-01-25,Freelancer Payment - Design,28000,EXPENSE,Contractors
+2026-01-28,Client Project Gamma - Milestone 1,400000,INCOME,Consulting
+2026-01-30,Electricity Bill,8500,EXPENSE,Utilities
+2026-02-03,Client Project Alpha Phase 2,275000,INCOME,Consulting
+2026-02-05,AWS Cloud Hosting Feb,19500,EXPENSE,Infrastructure
+2026-02-08,Office Rent Feb,45000,EXPENSE,Rent
+2026-02-10,Legal Advisory Fees,55000,EXPENSE,Legal
+2026-02-12,Client Project Delta Onboarding,150000,INCOME,Onboarding
+2026-02-15,Employee Salaries Feb,320000,EXPENSE,Salaries
+2026-02-18,Team Offsite Event,42000,EXPENSE,Events
+2026-02-20,Client Retainer - Beta,180000,INCOME,Retainer
+2026-02-22,Insurance Premium,22000,EXPENSE,Insurance
+2026-02-25,Equipment Purchase - Laptops,180000,EXPENSE,Equipment
+2026-02-28,Ad-hoc Consulting Revenue,95000,INCOME,Consulting
+2026-03-02,AWS Cloud Hosting Mar,21000,EXPENSE,Infrastructure
+2026-03-04,Office Rent Mar,45000,EXPENSE,Rent
+2026-03-05,Client Project Gamma - Milestone 2,400000,INCOME,Consulting
+2026-03-08,Employee Salaries Mar,325000,EXPENSE,Salaries
+2026-03-10,Marketing Campaign - LinkedIn,48000,EXPENSE,Marketing
+2026-03-12,Client Project Epsilon Kickoff,320000,INCOME,Consulting
+2026-03-14,Accounting Software License,15000,EXPENSE,Software
+2026-03-15,Client Retainer - Beta,180000,INCOME,Retainer
+2026-03-17,Travel Expenses - Client Visit,32000,EXPENSE,Travel
