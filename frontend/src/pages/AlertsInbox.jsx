@@ -31,7 +31,7 @@ const AlertsInbox = () => {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [scanning, setScanning] = useState(false);
-  const activeCompany = companies.find(c => c._id === activeCompanyId);
+  const activeCompany = (Array.isArray(companies) ? companies : []).find(c => c._id === activeCompanyId);
 
   const fetchAlerts = async () => {
     if (!activeCompanyId) return;
@@ -83,7 +83,7 @@ const AlertsInbox = () => {
     );
   }
 
-  const unreadCount = alerts.filter(a => !a.isRead).length;
+  const unreadCount = (Array.isArray(alerts) ? alerts : []).filter(a => !a.isRead).length;
 
   return (
     <div className="animate-fade-in max-w-4xl mx-auto pb-12">

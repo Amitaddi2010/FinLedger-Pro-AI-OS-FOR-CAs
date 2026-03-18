@@ -67,7 +67,7 @@ const CompanyDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [insightLoading, setInsightLoading] = useState(false);
 
-  const activeCompany = companies.find(c => c._id === activeCompanyId);
+  const activeCompany = (Array.isArray(companies) ? companies : []).find(c => c._id === activeCompanyId);
 
   useEffect(() => {
     if (activeCompanyId) {

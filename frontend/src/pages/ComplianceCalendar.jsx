@@ -127,7 +127,7 @@ const ComplianceCalendar = () => {
             ))}
             
             {daysInMonth.map(day => {
-              const dayDeadlines = deadlines.filter(d => isSameDay(d.date, day));
+              const dayDeadlines = (Array.isArray(deadlines) ? deadlines : []).filter(d => isSameDay(d.date, day));
               const isToday = isSameDay(day, new Date());
               const isSelected = isSameDay(day, selectedDate);
               
@@ -168,8 +168,8 @@ const ComplianceCalendar = () => {
             </h3>
             
             <div className="space-y-3 flex-1 overflow-y-auto pr-2 custom-scrollbar">
-              {deadlines.filter(d => isSameDay(d.date, selectedDate)).length > 0 ? (
-                deadlines.filter(d => isSameDay(d.date, selectedDate)).map((dl, i) => (
+              {(Array.isArray(deadlines) ? deadlines : []).filter(d => isSameDay(d.date, selectedDate)).length > 0 ? (
+                (Array.isArray(deadlines) ? deadlines : []).filter(d => isSameDay(d.date, selectedDate)).map((dl, i) => (
                   <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} key={dl._id} className="p-4 rounded-xl bg-[#0D0B14] border border-white/[0.06] hover:border-white/20 transition-colors group">
                     <div className="flex justify-between items-start mb-2">
                       <span className={`text-[9px] font-bold px-2 py-0.5 rounded text-center uppercase tracking-wider ${TypeConfig[dl.type].bg} ${TypeConfig[dl.type].color} border ${TypeConfig[dl.type].border}`}>

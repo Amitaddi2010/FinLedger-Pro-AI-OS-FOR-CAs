@@ -11,7 +11,7 @@ const ExecutiveReport = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const activeCompany = companies.find(c => c._id === activeCompanyId);
+  const activeCompany = (Array.isArray(companies) ? companies : []).find(c => c._id === activeCompanyId);
 
   useEffect(() => {
     const fetchReport = async () => {

@@ -18,7 +18,7 @@ const Sidebar = () => {
 
   const handleLogout = async () => { await logout(); navigate('/login'); };
 
-  const activeCompany = companies.find(c => c._id === activeCompanyId);
+  const activeCompany = (Array.isArray(companies) ? companies : []).find(c => c._id === activeCompanyId);
 
   return (
     <div className="fixed top-0 left-0 h-full w-64 bg-[#0D0B14] border-r border-white/[0.06] flex flex-col pt-6 pb-4 text-gray-400 shadow-2xl z-50">

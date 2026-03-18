@@ -58,7 +58,7 @@ const DocumentVault = () => {
     }
   };
 
-  const filteredDocs = documents.filter(doc => {
+  const filteredDocs = (Array.isArray(documents) ? documents : []).filter(doc => {
     const matchesCategory = activeCategory === 'All Files' || doc.category === activeCategory;
     const matchesSearch = doc.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;

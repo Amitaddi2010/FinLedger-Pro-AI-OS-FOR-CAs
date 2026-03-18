@@ -23,7 +23,7 @@ const Settings = () => {
   const [annualProfitTarget, setAnnualProfitTarget] = useState('');
   const [budgetStatus, setBudgetStatus] = useState({ loading: false, saved: false, error: null });
 
-  const activeCompany = companies.find(c => c._id === activeCompanyId);
+  const activeCompany = (Array.isArray(companies) ? companies : []).find(c => c._id === activeCompanyId);
 
   const handleSaveBudget = async (e) => {
     e.preventDefault();

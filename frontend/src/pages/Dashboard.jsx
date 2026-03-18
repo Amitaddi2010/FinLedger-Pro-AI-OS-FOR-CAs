@@ -269,20 +269,20 @@ const Dashboard = () => {
     navigate('/company');
   };
 
-  const filteredPortfolio = portfolio.filter(c => 
+  const filteredPortfolio = (Array.isArray(portfolio) ? portfolio : []).filter(c => 
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     (c.industry || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const displayData = filteredPortfolio.length > 0 ? filteredPortfolio : 
-    companies.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase())).map(c => ({
+    (Array.isArray(companies) ? companies : []).filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase())).map(c => ({
       ...c, healthScore: c.healthScore || 100, metrics: null, prorataStatus: null
     }));
 
   // Portfolio stats
   const totalCompanies = displayData.length;
   const avgHealth = totalCompanies > 0 ? Math.round(displayData.reduce((sum, c) => sum + (c.healthScore || 0), 0) / totalCompanies) : 0;
-  const highRiskCount = displayData.filter(c => c.riskLevel === 'HIGH').length;
+  const highRiskCount = (Array.isArray(displayData) ? displayData : []).filter(c => c.riskLevel === 'HIGH').length;
 
   return (
     <div className="animate-fade-in max-w-[1600px] mx-auto">

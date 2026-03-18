@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 const ClientDashboard = () => {
   const { activeCompanyId, companies, user } = useAuthStore();
   const navigate = useNavigate();
-  const activeCompany = companies.find(c => c._id === activeCompanyId);
+  const activeCompany = (Array.isArray(companies) ? companies : []).find(c => c._id === activeCompanyId);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
