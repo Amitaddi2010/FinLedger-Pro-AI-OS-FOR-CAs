@@ -147,9 +147,9 @@ const CompanyDashboard = () => {
               Financial Command Center
             </span>
           </motion.div>
-          <h1 className="text-4xl font-black text-white tracking-tight">{activeCompany?.name}</h1>
+          <h1 className="text-2xl md:text-4xl font-black text-white tracking-tight">{activeCompany?.name}</h1>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <button onClick={() => navigate('/report')} className="text-sm font-medium text-finledger-silver hover:text-white glass-panel border-white/5 hover:border-white/20 px-4 py-2.5 rounded-xl transition flex items-center gap-2">
             <PrinterIcon className="w-4 h-4" /> Export Report
           </button>

@@ -121,8 +121,8 @@ const LedgerExplorer = () => {
           </span>
           <span className="text-gray-600 text-xs font-mono">{total.toLocaleString()} records</span>
         </motion.div>
-        <h1 className="text-4xl font-black text-white tracking-tight">Ledger Explorer</h1>
-        <p className="text-gray-500 mt-1">Search, filter, and drill into every transaction for {activeCompany?.name}</p>
+        <h1 className="text-2xl md:text-4xl font-black text-white tracking-tight">Ledger Explorer</h1>
+        <p className="text-gray-500 mt-1 text-sm md:text-base">Search, filter, and drill into every transaction for {activeCompany?.name}</p>
       </div>
 
       {/* Controls Bar */}
@@ -186,7 +186,7 @@ const LedgerExplorer = () => {
       </div>
 
       {/* Transaction Table */}
-      <div className="glass-panel overflow-hidden">
+      <div className="glass-panel overflow-x-auto">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-8 h-8 border-4 border-white/10 border-t-finledger-indigo rounded-full animate-spin" />

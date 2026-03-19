@@ -481,7 +481,7 @@ const LandingPage = () => {
             style={{ transform: `translate(${-mousePos.x * 0.5}px, ${-mousePos.y * 0.5}px)` }} />
 
           <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-[85vh]">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-[60vh] lg:min-h-[85vh]">
               {/* LEFT — Copy */}
               <div className="flex flex-col gap-6 pt-10 lg:pt-0">
                 <ScrollReveal>
@@ -489,12 +489,12 @@ const LandingPage = () => {
                 </ScrollReveal>
 
                 <ScrollReveal delay={100}>
-                  <h1 className="text-5xl md:text-6xl xl:text-7xl font-black text-white tracking-tight leading-[1.05]">
+                  <h1 className="text-3xl sm:text-5xl md:text-6xl xl:text-7xl font-black text-white tracking-tight leading-[1.05]">
                     <span className="block">Your Financial</span>
                     <span className="block mt-1">
                       <span className="shine-text">AI Workstation</span>
                     </span>
-                    <span className="block mt-1 text-gray-400 text-3xl md:text-4xl xl:text-5xl font-bold">for Chartered Accountants</span>
+                    <span className="block mt-1 text-gray-400 text-xl sm:text-3xl md:text-4xl xl:text-5xl font-bold">for Chartered Accountants</span>
                   </h1>
                 </ScrollReveal>
 
@@ -571,13 +571,13 @@ const LandingPage = () => {
 
         {/* ═══════════════ FEATURES SECTION ═══════════════ */}
         <section id="features" className="bg-[#08060D] w-full">
-          <section className="w-full border-t border-white/10 p-5 md:pl-10">
+          <section className="w-full border-t border-white/10 px-4 py-5 md:pl-10">
             <span className="text-gray-500 text-xs font-medium font-mono uppercase tracking-wide">CORE SUITE</span>
           </section>
 
           <ScrollReveal>
-            <section className="w-full border-t border-white/10 px-10 h-48 sm:h-[300px] flex flex-col justify-center gap-5">
-              <h2 className="text-start text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight">Financial Intelligence</h2>
+            <section className="w-full border-t border-white/10 px-4 md:px-10 h-48 sm:h-[300px] flex flex-col justify-center gap-5">
+              <h2 className="text-start text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight">Financial Intelligence</h2>
               <p className="max-w-2xl text-gray-400 text-lg leading-relaxed">
                 We are building the definitive toolchain for CA practices. Everything you need to scale your firm, analyze client data, and ensure absolute compliance.
               </p>
@@ -605,14 +605,14 @@ const LandingPage = () => {
                 <ScrollReveal key={i} delay={i * 100}>
                   <div id={`feature-${i}`} className={`grid lg:grid-cols-2 w-full ${i !== 0 ? 'border-t border-white/10' : ''}`}>
                     {/* Left content */}
-                    <div className="flex flex-col p-10 justify-between gap-10 lg:gap-20">
+                    <div className="flex flex-col p-5 md:p-10 justify-between gap-6 lg:gap-20">
                       <div className="flex flex-col gap-5 max-w-[24rem]">
                         <span className="text-gray-500 text-xs font-mono uppercase tracking-widest">{feature.label}</span>
                         <h4 className="text-3xl font-bold text-white tracking-tight leading-tight">{feature.title}</h4>
                         <p className="text-gray-400 text-base leading-relaxed">{feature.desc}</p>
                         <Link to="/register" className="btn-primary !px-6 !py-2.5 inline-block w-fit mt-5 text-sm">{feature.buttonText}</Link>
                       </div>
-                      <div className="flex gap-4 divide-x divide-white/10 items-center bg-white/5 border border-white/10 px-4 py-2 w-fit rounded-lg hover:bg-white/[0.08] transition-all duration-300">
+                      <div className="flex flex-wrap gap-4 divide-x divide-white/10 items-center bg-white/5 border border-white/10 px-4 py-2 w-fit rounded-lg hover:bg-white/[0.08] transition-all duration-300">
                         <div className="flex items-center gap-2 pr-4 text-white">{feature.icon}</div>
                         {feature.stats.map((stat, j) => (
                           <div key={j} className="flex gap-1.5 items-baseline pl-4">
@@ -624,7 +624,7 @@ const LandingPage = () => {
                     </div>
 
                     {/* Right — Terminal */}
-                    <div className="flex flex-col min-h-[16rem] sm:min-h-[30rem] border-l border-white/10 relative overflow-hidden bg-[#0D0B14]">
+                    <div className="flex flex-col min-h-[16rem] sm:min-h-[30rem] lg:border-l border-t lg:border-t-0 border-white/10 relative overflow-hidden bg-[#0D0B14]">
                       <div className="absolute inset-0 bg-gradient-to-br from-transparent to-white/5 opacity-50" />
                       <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] rounded-full blur-[100px] opacity-20`}
                         style={{ backgroundColor: feature.accentColor === 'indigo' ? 'rgba(99,102,241,0.2)' : feature.accentColor === 'emerald' ? 'rgba(16,185,129,0.2)' : feature.accentColor === 'electric' ? 'rgba(139,92,246,0.2)' : 'rgba(244,63,94,0.2)' }} />
