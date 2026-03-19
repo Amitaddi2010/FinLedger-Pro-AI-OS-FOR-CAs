@@ -42,7 +42,7 @@ const CreateInvoiceModal = ({ isOpen, onClose, onCreated }) => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="w-full max-w-3xl glass-panel p-8"
+        className="w-full max-w-3xl bg-[#0D0B14] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-8"
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-black text-white">Create New Invoice</h2>
