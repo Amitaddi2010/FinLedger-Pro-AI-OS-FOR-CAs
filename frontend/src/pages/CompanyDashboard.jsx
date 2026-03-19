@@ -398,23 +398,46 @@ const CompanyDashboard = () => {
             <div className="glass-panel p-6 border-l-2 border-l-finledger-electric">
               <h3 className="text-sm font-bold text-finledger-silver uppercase tracking-widest mb-4 flex items-center gap-2">
                 <PresentationChartLineIcon className="w-5 h-5 text-finledger-electric" />
-                Next Month Forecast
+                Cash Flow Forecast
               </h3>
-              {forecast?.predictedRevenue !== null && forecast?.predictedRevenue !== undefined ? (
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="glass-panel border-white/5 p-5 text-center transition-all hover:bg-slate-800/80">
-                    <p className="text-xs text-gray-500 uppercase tracking-widest mb-2 font-bold">Revenue</p>
-                    <p className="text-2xl font-black text-white">₹{forecast.predictedRevenue?.toLocaleString('en-IN')}</p>
-                  </div>
-                  <div className="glass-panel border-white/5 p-5 text-center transition-all hover:bg-slate-800/80">
-                    <p className="text-xs text-gray-500 uppercase tracking-widest mb-2 font-bold">Profit</p>
-                    <p className={`text-2xl font-black ${forecast.predictedProfit >= 0 ? 'text-finledger-emerald' : 'text-finledger-ruby'}`}>
-                      ₹{forecast.predictedProfit?.toLocaleString('en-IN')}
-                    </p>
-                  </div>
+              {forecast?.predictedRevenue !== null && forecast?.predictedRevenue !== undefined && forecast?.historicalData?.length > 0 ? (
+                <div className="h-[200px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart 
+                      data={[
+                        ...forecast.historicalData.slice(-3).map(d => ({ 
+                          name: d.month, 
+                          actualRevenue: d.revenue, 
+                          actualProfit: d.revenue - d.expenses 
+                        })),
+                        { 
+                          name: 'Next Month (Predicted)', 
+                          predictedRevenue: forecast.predictedRevenue,
+                          predictedProfit: forecast.predictedProfit
+                        }
+                      ]} 
+                      margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                      <XAxis dataKey="name" stroke="#94a3b8" tick={{fontSize: 10}} axisLine={false} tickLine={false} />
+                      <YAxis stroke="#94a3b8" tick={{fontSize: 10}} axisLine={false} tickLine={false} tickFormatter={(val) => `₹${(val/1000)}k`} />
+                      <RechartsTooltip 
+                        contentStyle={{ backgroundColor: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }}
+                        formatter={(value, name) => [`₹${value.toLocaleString('en-IN')}`, name.replace(/([A-Z])/g, ' $1').trim()]}
+                      />
+                      <Line type="monotone" dataKey="actualRevenue" stroke="#8b5cf6" strokeWidth={2} dot={{r: 3}} />
+                      <Line type="monotone" dataKey="actualProfit" stroke="#10b981" strokeWidth={2} dot={{r: 3}} />
+                      <Line type="dashed" strokeDasharray="5 5" dataKey="predictedRevenue" stroke="#8b5cf6" strokeWidth={3} dot={{r: 5, strokeWidth: 2}} activeDot={{r: 8}} />
+                      <Line type="dashed" strokeDasharray="5 5" dataKey="predictedProfit" stroke="#10b981" strokeWidth={3} dot={{r: 5, strokeWidth: 2}} activeDot={{r: 8}} />
+                    </LineChart>
+                  </ResponsiveContainer>
                 </div>
               ) : (
-                <p className="text-gray-500 text-sm py-4">Sufficient historical data tracking (2+ months) is required to generate reliable ML forecasts.</p>
+                <div className="flex flex-col items-center justify-center py-8 text-center bg-white/[0.02] rounded-xl border border-white/5">
+                  <PresentationChartLineIcon className="w-8 h-8 text-gray-600 mb-2" />
+                  <p className="text-gray-400 text-sm font-medium">Insufficient Historical Data</p>
+                  <p className="text-gray-500 text-xs mt-1">2+ months of tracking required for ML forecasts.</p>
+                </div>
               )}
             </div>
           </div>

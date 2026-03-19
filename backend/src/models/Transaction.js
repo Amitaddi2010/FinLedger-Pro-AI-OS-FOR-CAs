@@ -17,7 +17,9 @@ const transactionSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Create compound index for fast queries by company and date
+// Compound indexes for fast queries
 transactionSchema.index({ companyId: 1, date: -1 });
+transactionSchema.index({ companyId: 1, type: 1, date: -1 });
+transactionSchema.index({ companyId: 1, category: 1 });
 
 export const Transaction = mongoose.model('Transaction', transactionSchema);

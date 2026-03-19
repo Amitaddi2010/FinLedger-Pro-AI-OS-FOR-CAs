@@ -8,6 +8,7 @@ import {
 import { format, addMonths, subMonths, isSameMonth, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import api from '../services/api';
 import { useAuthStore } from '../stores/authStore';
+import { useToast } from '../components/ToastProvider';
 
 const TypeConfig = {
   GST: { color: 'text-indigo-400', bg: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
@@ -19,6 +20,7 @@ const TypeConfig = {
 
 const ComplianceCalendar = () => {
   const { activeCompanyId } = useAuthStore();
+  const toast = useToast();
   const [deadlines, setDeadlines] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date()); 
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -32,6 +34,7 @@ const ComplianceCalendar = () => {
       setDeadlines(normalized);
     } catch (err) {
       console.error("Fetch Deadlines Failed:", err);
+      toast.error('Failed to sync compliance calendar');
     }
   };
 
@@ -46,8 +49,9 @@ const ComplianceCalendar = () => {
       setShowModal(false);
       setNewDeadline({ title: '', date: format(new Date(), 'yyyy-MM-dd'), type: 'GST' });
       fetchDeadlines();
+      toast.success('Deadline added successfully');
     } catch (err) {
-      alert("Failed to add deadline: " + err.message);
+      toast.error(err.response?.data?.message || err.message || "Failed to add deadline");
     }
   };
 

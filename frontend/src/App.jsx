@@ -20,8 +20,12 @@ import GstIntelligence from './pages/GstIntelligence';
 import YoYComparison from './pages/YoYComparison';
 import AuditTrail from './pages/AuditTrail';
 import ClientBilling from './pages/ClientBilling';
+
 import Sidebar from './components/Sidebar';
 import { useAuthStore } from './stores/authStore';
+
+import ErrorBoundary from './components/ErrorBoundary';
+import { ToastProvider } from './components/ToastProvider';
 
 const ProtectedRoute = ({ children }) => {
   const user = useAuthStore(state => state.user);
@@ -31,7 +35,7 @@ const ProtectedRoute = ({ children }) => {
   return (
     <div className="flex bg-[#08060D] min-h-screen">
       <Sidebar />
-      <div className="flex-1 ml-64 p-8 overflow-y-auto">
+      <div className="flex-1 md:ml-64 pt-14 md:pt-0 p-4 md:p-8 overflow-y-auto w-full">
         {children}
       </div>
     </div>
@@ -61,35 +65,39 @@ function App() {
   }
 
   return (
-    <Router>
-      <Routes>
-        {/* Public Pages */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
-        <Route path="/register" element={user ? <Navigate to="/" replace /> : <Register />} />
-        
-        {/* Protected Dashboard Pages */}
-        <Route path="/dashboard" element={<ProtectedRoute><RoleRedirect /></ProtectedRoute>} />
-        <Route path="/client-dashboard" element={<ProtectedRoute><ClientDashboard /></ProtectedRoute>} />
-        <Route path="/company" element={<ProtectedRoute><CompanyDashboard /></ProtectedRoute>} />
-        <Route path="/calendar" element={<ProtectedRoute><ComplianceCalendar /></ProtectedRoute>} />
-        <Route path="/vault" element={<ProtectedRoute><DocumentVault /></ProtectedRoute>} />
-        <Route path="/ai-console" element={<ProtectedRoute><AIConsole /></ProtectedRoute>} />
-        <Route path="/upload" element={<ProtectedRoute><UploadData /></ProtectedRoute>} />
-        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-        <Route path="/report" element={<ProtectedRoute><ExecutiveReport /></ProtectedRoute>} />
-        <Route path="/alerts" element={<ProtectedRoute><AlertsInbox /></ProtectedRoute>} />
-        <Route path="/ledger" element={<ProtectedRoute><LedgerExplorer /></ProtectedRoute>} />
-        <Route path="/ratios" element={<ProtectedRoute><FinancialRatios /></ProtectedRoute>} />
-        <Route path="/gst" element={<ProtectedRoute><GstIntelligence /></ProtectedRoute>} />
-        <Route path="/yoy" element={<ProtectedRoute><YoYComparison /></ProtectedRoute>} />
-        <Route path="/audit" element={<ProtectedRoute><AuditTrail /></ProtectedRoute>} />
-        <Route path="/billing" element={<ProtectedRoute><ClientBilling /></ProtectedRoute>} />
-        
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+    <ErrorBoundary>
+      <ToastProvider>
+        <Router>
+          <Routes>
+            {/* Public Pages */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
+            <Route path="/register" element={user ? <Navigate to="/" replace /> : <Register />} />
+            
+            {/* Protected Dashboard Pages */}
+            <Route path="/dashboard" element={<ProtectedRoute><RoleRedirect /></ProtectedRoute>} />
+            <Route path="/client-dashboard" element={<ProtectedRoute><ClientDashboard /></ProtectedRoute>} />
+            <Route path="/company" element={<ProtectedRoute><CompanyDashboard /></ProtectedRoute>} />
+            <Route path="/calendar" element={<ProtectedRoute><ComplianceCalendar /></ProtectedRoute>} />
+            <Route path="/vault" element={<ProtectedRoute><DocumentVault /></ProtectedRoute>} />
+            <Route path="/ai-console" element={<ProtectedRoute><AIConsole /></ProtectedRoute>} />
+            <Route path="/upload" element={<ProtectedRoute><UploadData /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            <Route path="/report" element={<ProtectedRoute><ExecutiveReport /></ProtectedRoute>} />
+            <Route path="/alerts" element={<ProtectedRoute><AlertsInbox /></ProtectedRoute>} />
+            <Route path="/ledger" element={<ProtectedRoute><LedgerExplorer /></ProtectedRoute>} />
+            <Route path="/ratios" element={<ProtectedRoute><FinancialRatios /></ProtectedRoute>} />
+            <Route path="/gst" element={<ProtectedRoute><GstIntelligence /></ProtectedRoute>} />
+            <Route path="/yoy" element={<ProtectedRoute><YoYComparison /></ProtectedRoute>} />
+            <Route path="/audit" element={<ProtectedRoute><AuditTrail /></ProtectedRoute>} />
+            <Route path="/billing" element={<ProtectedRoute><ClientBilling /></ProtectedRoute>} />
+            
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Router>
+      </ToastProvider>
+    </ErrorBoundary>
   );
 }
 

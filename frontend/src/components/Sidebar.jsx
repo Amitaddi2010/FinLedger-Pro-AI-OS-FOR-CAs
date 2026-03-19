@@ -1,27 +1,61 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { 
   ChartBarIcon, BuildingOfficeIcon, BoltIcon, 
   ArrowUpOnSquareIcon, ArrowLeftEndOnRectangleIcon,
   Cog6ToothIcon, CalendarDaysIcon, ArchiveBoxIcon,
   ShieldCheckIcon, SparklesIcon, ChevronDownIcon, BellAlertIcon,
-  TableCellsIcon, CalculatorIcon, DocumentCheckIcon, BanknotesIcon
+  TableCellsIcon, CalculatorIcon, DocumentCheckIcon, BanknotesIcon,
+  Bars3Icon, XMarkIcon
 } from '@heroicons/react/24/outline';
 
 const Sidebar = () => {
   const { user, companies, activeCompanyId, logout, fetchCompanies, switchCompany } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isCompanyOpen, setIsCompanyOpen] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   useEffect(() => { if (user) fetchCompanies(); }, [user]);
+  
+  // Close sidebar on mobile when route changes
+  useEffect(() => { setIsMobileOpen(false); }, [location.pathname]);
 
   const handleLogout = async () => { await logout(); navigate('/login'); };
 
   const activeCompany = (Array.isArray(companies) ? companies : []).find(c => c._id === activeCompanyId);
 
   return (
-    <div className="fixed top-0 left-0 h-full w-64 bg-[#0D0B14] border-r border-white/[0.06] flex flex-col pt-6 pb-4 text-gray-400 shadow-2xl z-50">
+    <>
+      {/* Mobile Hamburger Button */}
+      <button 
+        onClick={() => setIsMobileOpen(true)}
+        className="md:hidden fixed top-4 left-4 z-40 p-2 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10"
+      >
+        <Bars3Icon className="w-6 h-6" />
+      </button>
+
+      {/* Mobile Backdrop */}
+      {isMobileOpen && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar Container */}
+      <div className={`fixed top-0 left-0 h-full w-64 bg-[#0D0B14] border-r border-white/[0.06] flex flex-col pt-6 pb-4 text-gray-400 shadow-2xl z-50 transition-transform duration-300 ease-in-out ${
+        isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      }`}>
+        
+        {/* Mobile Close Button */}
+        <button 
+          onClick={() => setIsMobileOpen(false)}
+          className="md:hidden absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white"
+        >
+          <XMarkIcon className="w-5 h-5" />
+        </button>
       
       {/* Brand */}
       <div className="px-6 pb-5 border-b border-white/[0.06]">
@@ -161,6 +195,7 @@ const Sidebar = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

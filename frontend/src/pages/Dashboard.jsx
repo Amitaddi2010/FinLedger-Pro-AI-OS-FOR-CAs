@@ -11,6 +11,15 @@ import {
   ArrowPathIcon, ViewColumnsIcon
 } from '@heroicons/react/24/outline';
 
+// SKELETON LOADER
+const SkeletonCard = ({ className = "" }) => (
+  <div className={`glass-panel p-6 ${className}`}>
+    <div className="skeleton-bg h-4 w-24 rounded mb-4"></div>
+    <div className="skeleton-bg h-10 w-48 rounded mb-2"></div>
+    <div className="skeleton-bg h-3 w-32 rounded"></div>
+  </div>
+);
+
 /* ═══════════════════════════════════════════════════
    ADD COMPANY MODAL — Premium glassmorphism design
    ═══════════════════════════════════════════════════ */
